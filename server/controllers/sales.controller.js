@@ -127,3 +127,32 @@ exports.getProductDistribution = async (req, res) => {
     }
 };
 
+//Get region-wise revenue distruction
+
+exports.getRegionDistribution = async (req, res) => {
+    try {
+        const {startDate, endDate} = req.query;
+        const matchCondition = {};
+        if (startDate && endDate) {
+            matchCondition.date = {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            };
+        }
+        const regionData = await Sale.aggregate([
+            {$match: matchCondition},
+            {$group: {
+                _id: "$region",
+                totalRevenue: {$sum: "$totalRevenue"}
+            }}
+        ]);
+        const formattedData = regionData.map(item => ({
+            region: item._id,
+            totalRevenue: item.totalRevenue
+        }));
+        res.status(200).json(formattedData);
+    } catch (error) {
+        res.status(500).send({ message: error.message})
+    }
+};
+
