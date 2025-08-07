@@ -13,4 +13,4 @@ router.get("/trend", getSalesTrend);
 router.get("/products", getProductDistribution);
 router.get("/regions", getRegionDistribution);
 
-
+module.exports = router;
